@@ -55,6 +55,15 @@ router.post('/', (req, res, next) => {
 })
 //Put /tweets:id
 router.put('/:id', (req, res, next) => {
+    const { id } = req.params;
+    const { text } = req.body;
+    const tweet = tweets.find(t => t.id === id);
+    if (tweet) {
+        tweet.text = text;
+        res.status(200).json(tweet);
+    } else {
+        res.status(404).json({ message: `Tweet ${id} is not found` });
+    }
 
 });
 //Delete /tweets:id
