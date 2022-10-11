@@ -54,5 +54,13 @@ router.post('/', (req, res, next) => {
     res.status(201).json(tweet);
 })
 //Put /tweets:id
+router.put('/:id', (req, res, next) => {
+
+});
 //Delete /tweets:id
+router.delete('/:id', (req, res, next) => {
+    const { id } = req.params;
+    tweets = tweets.filter(t => t.id !== id);
+    res.sendStatus(204);
+});
 export default router;
