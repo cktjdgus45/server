@@ -3,24 +3,24 @@ import 'express-async-errors';
 
 const router = express.Router();
 
-const tweets = [
+let tweets = [
     {
-        id: 1,
+        id: "1",
         name: 'popo',
         username: 'popo',
         profileUrl: 'https://lh3.googleusercontent.com/ogw/AOh-ky2bR5KkWnwa8gBbrxQKurPk8144Ls0y7pVzUXBZKw=s32-c-mo',
-        createdAt: Date.now().toString(),
+        createdAt: new Date(),
         text: 'so sweet tweet'
     },
     {
-        id: 2,
+        id: "2",
         name: 'bob',
         username: 'bob',
         profileUrl: 'https://lh3.googleusercontent.com/ogw/AOh-ky2bR5KkWnwa8gBbrxQKurPk8144Ls0y7pVzUXBZKw=s32-c-mo',
-        createdAt: Date.now().toString(),
+        createdAt: new Date(),
         text: 'tweet2'
     },
-]
+];
 
 //Get /tweets
 //Get /tweets?username=:username
@@ -31,7 +31,7 @@ router.get('/', (req, res, next) => {
 })
 //Get /tweets:id
 router.get('/:id', (req, res, next) => {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     const tweet = tweets.find(t => t.id === id);
     if (tweet) {
         res.status(200).json(tweet);
@@ -40,6 +40,19 @@ router.get('/:id', (req, res, next) => {
     }
 })
 //Post /tweets
+router.post('/', (req, res, next) => {
+    const { text, username, name } = req.body;
+    const tweet = {
+        id: Date.now().toString(),
+        name,
+        username,
+        profileUrl: 'https://lh3.googleusercontent.com/ogw/AOh-ky2bR5KkWnwa8gBbrxQKurPk8144Ls0y7pVzUXBZKw=s32-c-mo',
+        createdAt: new Date(),
+        text
+    };
+    tweets = [tweet, ...tweets];
+    res.status(201).json(tweet);
+})
 //Put /tweets:id
 //Delete /tweets:id
 export default router;
