@@ -1,51 +1,59 @@
+import * as userRepository from './auth.js';
+
 let tweets = [
     {
-        id: "1",
-        name: 'popo',
-        username: 'popo',
-        profileUrl: 'https://lh3.googleusercontent.com/ogw/AOh-ky2bR5KkWnwa8gBbrxQKurPk8144Ls0y7pVzUXBZKw=s32-c-mo',
-        createdAt: new Date(),
-        text: 'so sweet tweet'
+        id: '1',
+        text: '드림코더분들 화이팅!',
+        createdAt: new Date().toString(),
+        userId: '1',
     },
     {
-        id: "2",
-        name: 'bob',
-        username: 'bob',
-        profileUrl: 'https://lh3.googleusercontent.com/ogw/AOh-ky2bR5KkWnwa8gBbrxQKurPk8144Ls0y7pVzUXBZKw=s32-c-mo',
-        createdAt: new Date(),
-        text: 'tweet2'
+        id: '2',
+        text: '안뇽!',
+        createdAt: new Date().toString(),
+        userId: '1',
     },
 ];
 
 export async function getAll() {
-    return tweets;
+    return Promise.all(
+        tweets.map(async (tweet) => {
+            const { username, name, url } = await userRepository.findById(
+                tweet.userId
+            );
+            return { ...tweet, username, name, url };
+        })
+    );
 }
 export async function getAllByUsername(username) {
-    return tweets.filter(tweet => tweet.username === username);
+    return getAll().then((tweets) =>
+        tweets.filter((tweet) => tweet.username === username)
+    );
 }
 export async function getById(id) {
-    return tweets.find(tweet => tweet.id === id);
+    const found = tweets.find((tweet) => tweet.id === id);
+    if (!found) {
+        return null;
+    }
+    const { username, name, url } = await userRepository.findById(found.userId);
+    return { ...found, username, name, url };
 }
 export async function create(name, username, text) {
     const tweet = {
-        id: Date.now().toString(),
-        name,
-        username,
-        profileUrl: 'https://lh3.googleusercontent.com/ogw/AOh-ky2bR5KkWnwa8gBbrxQKurPk8144Ls0y7pVzUXBZKw=s32-c-mo',
+        id: new Date().toString(),
+        text,
         createdAt: new Date(),
-        text
+        userId,
     };
     tweets = [tweet, ...tweets];
-    return tweet;
+    return getById(tweet.id);
 }
 export async function update(id, text) {
-    const tweet = tweets.find(tweet => tweet.id === id);
+    const tweet = tweets.find((tweet) => tweet.id === id);
     if (tweet) {
         tweet.text = text;
-    } else {
-        throw new Error(`${id} not found`);
     }
-    return tweet;
+    return getById(tweet.id);
 }
 
 export async function remove(id) {
